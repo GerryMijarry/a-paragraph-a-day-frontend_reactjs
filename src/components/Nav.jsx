@@ -1,7 +1,8 @@
 import React from "react";
+import LoginControl from "./LoginControl";
 
 
-const Nav = () => {
+const Nav = ({isLoggedIn , currentUser, handleLoginClick, handleLogoutClick}) => {
 
 
     return (
@@ -32,7 +33,17 @@ const Nav = () => {
                         </li>
                     </ul>
                     <form className="d-flex">
-                        <button className="btn btn-outline-success" type="submit">Login</button>
+                        
+                   
+                        
+                        
+                    ({isLoggedIn , currentUser, handleLoginClick, handleLogoutClick})
+                        
+                       
+                            <LoginControl isLoggedIn={isLoggedIn}  currentUser={currentUser} handleLoginClick={handleLoginClick} handleLogoutClick={handleLogoutClick}/>
+
+                        
+                        
 
                     </form>
                 </div>
