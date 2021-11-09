@@ -1,21 +1,20 @@
 import React, { Component } from "react";
 import "./App.css";
 import Nav from "./components/Nav";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Write from "./pages/Write";
+import Welcome from "./components/Welcome";
+
+import Login from "./routes/Login";
+import Register from "./routes/Register";
+import Profile from "./routes/Profile";
+import Write from "./routes/Write";
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import { createBrowserHistory } from "history";
 
 import axios from "axios";
 
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Link,
-  withRouter,
-} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -35,7 +34,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.getBooks();
     this.getCurrentUser();
     if (this.state.localToken && !this.state.token) {
       this.getCurrentUserToken();
@@ -45,10 +43,6 @@ class App extends Component {
         isLoggedIn: false,
       });
     }
-  }
-
-  handleLoginClick() {
-    this.setState({ isLoggedIn: true });
   }
 
   //#region Users
@@ -148,26 +142,40 @@ class App extends Component {
   //#endregion
 
   render() {
-    let varUser = this.state.user;
     return (
       <div className="App">
         <Nav
-          isLoggedIn={this.isLoggedIn}
+          isLoggedIn={this.state.isLoggedIn}
           currentUser={this.state.currentUser}
           handleLoginClick={this.handleLoginClick}
           handleLogoutClick={this.handleLogoutClick}
         />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/write" element={<Write />} />
+            <Route path="/" element={<App />}>
+              <Route path="/register" element={<Register />} />
+              <Route
+                path="/login"
+                element={<Login loginUser={App.loginUser} />}
+              />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/write" element={<Write />} />
+              <Route
+                path="*"
+                element={
+                  <main style={{ padding: "1rem" }}>
+                    <p>There's nothing here!</p>
+                  </main>
+                }
+              />
+            </Route>
           </Routes>
         </BrowserRouter>
+        <Welcome />
+        <Outlet />
       </div>
     );
   }
 }
 
-export default withRouter(App);
+export default App;
