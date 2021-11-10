@@ -1,19 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import LoginControl from "./LoginControl";
+import ProfileLink from "./ProfileLink";
 
-const Nav = ({
-  isLoggedIn,
-  currentUser,
-  handleLoginClick,
-  handleLogoutClick,
-}) => {
+const Nav = (props) => {
   return (
     <nav className="navbar navbar-expand-md navbar-dark bg-dark mb-4">
       <div className="container-fluid">
-        <a className="navbar-brand" href="#">
-          A Paragraph A Day
-        </a>
+        <a className="navbar-brand">A Paragraph A Day</a>
         <button
           className="navbar-toggler"
           type="button"
@@ -33,21 +27,19 @@ const Nav = ({
               </Link>
             </li>
             <li className="nav-item">
-              <Link
-                className="nav-link active"
-                aria-current="page"
-                to="/profile"
-              >
-                My Profile
-              </Link>
+              <ProfileLink
+                isLoggedIn={props.isLoggedIn}
+                getCurrentUserProfile={props.getCurrentUserProfile}
+                currentUsername={props.currentUsername}
+              />
             </li>
           </ul>
           <form className="d-flex">
             <LoginControl
-              isLoggedIn={isLoggedIn}
-              currentUser={currentUser}
-              handleLoginClick={handleLoginClick}
-              handleLogoutClick={handleLogoutClick}
+              isLoggedIn={props.isLoggedIn}
+              currentUsername={props.currentUsername}
+              handleLoginClick={props.handleLoginClick}
+              handleLogoutClick={props.handleLogoutClick}
             />
           </form>
         </div>

@@ -2,22 +2,20 @@ import React from "react";
 import LoginButton from "./LoginButton";
 import LogoutButton from "./LogoutButton";
 
-const LoginControl = ({
-  isLoggedIn,
-  currentUser,
-  handleLoginClick,
-  handleLogoutClick,
-}) => {
-  if (isLoggedIn) {
-    return (
+const LoginControl = (props) => {
+  let button;
+  if (props.isLoggedIn) {
+    button = (
       <LogoutButton
-        currentUser={currentUser}
-        handleLogoutClick={handleLogoutClick}
+        handleLogoutClick={props.handleLogoutClick}
+        currentUsername={props.currentUsername}
       />
     );
   } else {
-    return <LoginButton handleLoginClick={handleLoginClick} />;
+    button = <LoginButton />;
   }
+
+  return <div>{button}</div>;
 };
 
 export default LoginControl;

@@ -1,48 +1,30 @@
 import React, { Component } from "react";
+import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import Nav from "./components/Nav";
-import Welcome from "./components/Welcome";
 
 import Login from "./routes/Login";
 import Register from "./routes/Register";
 import Profile from "./routes/Profile";
 import Write from "./routes/Write";
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-import { createBrowserHistory } from "history";
-
 import axios from "axios";
 
-import { Outlet } from "react-router-dom";
-
 import "bootstrap/dist/css/bootstrap.min.css";
+import { ListGroupItem } from "react-bootstrap";
 
-const history = createBrowserHistory();
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      localToken: localStorage.token,
-      token: [],
-      user: [],
-      currentUser: [],
-      currentUserID: "",
-      registeredUser: [],
+      userProfile: [],
+      currentUsername: "",
       isLoggedIn: false,
     };
   }
 
   componentDidMount() {
-    this.getCurrentUser();
-    if (this.state.localToken && !this.state.token) {
-      this.getCurrentUserToken();
-      this.getCurrentUser();
-    } else {
-      this.setState({
-        isLoggedIn: false,
-      });
-    }
+    this.getCurrentUserToken();
   }
 
   //#region Users
@@ -64,8 +46,6 @@ class App extends Component {
       "https://localhost:44394/api/users/editname/" + secondReg.UserName,
       secondReg
     );
-    history.push("/login");
-    history.go("/login");
   };
 
   loginUser = async (login) => {
@@ -76,67 +56,73 @@ class App extends Component {
       );
       if (response === undefined) {
         this.setState({});
+        console.log("undefined");
       } else {
+        console.log(response.data);
+        console.log(response.data.access);
         this.setState({
           token: response.data.access,
+          currentUsername: login.username,
+          isLoggedIn: true,
         });
+        console.log(this.state.currentUsername);
+        localStorage.setItem("currentUsername", login.username);
         localStorage.setItem("token", response.data.access);
       }
     } catch (err) {
       console.log(err);
     }
-    history.push("/");
-    history.go("/");
   };
 
   getCurrentUserToken = async () => {
     try {
       const jwt = localStorage.getItem("token");
+      const currentUsername = localStorage.getItem("currentUsername");
       if (jwt === undefined) {
-        this.setState({});
+        this.setState({
+          isLoggedIn: false,
+          currentUsername: "",
+        });
       } else {
         this.setState({
           token: jwt,
+          currentUsername: currentUsername,
           isLoggedIn: true,
         });
+        console.log(this.state.isLoggedIn);
       }
     } catch (err) {
       console.log(err);
     }
   };
 
-  getCurrentUser = async () => {
+  getCurrentUserProfile = async () => {
     try {
       const jwt = localStorage.getItem("token");
+      const username = localStorage.getItem("currentUsername");
       let response = await axios.get(
-        "https://localhost:44394/api/examples/user/",
+        "http://127.0.0.1:8000/api/writing/profile/" + username,
         { headers: { Authorization: "Bearer " + jwt } }
       );
       if (response === undefined) {
         this.setState({});
       } else {
         this.setState({
-          user: response.data,
-          isLoggedIn: true,
-          currentUserID: response.data.id,
+          userProfile: response.data,
         });
       }
     } catch (err) {
       console.log(err);
     }
-    if (this.state.user.type == "Seller") {
-      this.setState({ usertype: true });
-    }
   };
 
-  handlelogoutClick = () => {
+  handleLogoutClick = () => {
     localStorage.removeItem("token");
-    this.setState({
-      isLoggedIn: false,
-      currentUser: [],
+    localStorage.removeItem("currentUsername");
+    this.setState({ isLoggedIn: false, currentUsername: "" }, () => {
+      console.log(this.state.isLoggedIn, "isLoggedIn");
+      console.log(this.state.currentUsername, "currentUsername");
     });
-    history.push("/");
-    history.go("/");
   };
 
   //#endregion
@@ -146,33 +132,28 @@ class App extends Component {
       <div className="App">
         <Nav
           isLoggedIn={this.state.isLoggedIn}
-          currentUser={this.state.currentUser}
+          currentUsername={this.state.currentUsername}
           handleLoginClick={this.handleLoginClick}
           handleLogoutClick={this.handleLogoutClick}
+          getCurrentUserProfile={this.getCurrentUserProfile}
         />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<App />}>
-              <Route path="/register" element={<Register />} />
-              <Route
-                path="/login"
-                element={<Login loginUser={App.loginUser} />}
-              />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/write" element={<Write />} />
-              <Route
-                path="*"
-                element={
-                  <main style={{ padding: "1rem" }}>
-                    <p>There's nothing here!</p>
-                  </main>
-                }
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-        <Welcome />
-        <Outlet />
+        <Routes>
+          <Route path="/" element={<Write />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login loginUser={this.loginUser} />} />
+          <Route
+            path="/profile"
+            element={<Profile userProfile={this.state.userProfile} />}
+          />
+          <Route
+            path="*"
+            element={
+              <main style={{ padding: "1rem" }}>
+                <p>There's nothing here!</p>
+              </main>
+            }
+          />
+        </Routes>
       </div>
     );
   }

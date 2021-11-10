@@ -1,13 +1,13 @@
 import React from "react";
 
-const LogoutButton = ({ currentUser, handleLogoutClick }) => {
+const LogoutButton = (props) => {
   return (
     <button
-      class="btn btn-outline-success"
+      class="btn btn-success"
       type="submit"
-      onClick={() => handleLogoutClick()}
+      onClick={() => props.handleLogoutClick()}
     >
-      Logout {currentUser}
+      Logout {props.currentUsername}
     </button>
   );
 };

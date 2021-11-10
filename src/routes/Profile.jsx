@@ -1,10 +1,10 @@
 import React from "react";
 
-const Profile = () => {
+const Profile = (props) => {
   return (
     <div className="form-signin">
       <form>
-        <h1 className="h3 mb-3 fw-normal">Your Profile</h1>
+        <h1 className="h3 mb-3 fw-normal">{props.userProfile}</h1>
 
         <div className="form-floating">
           <input
