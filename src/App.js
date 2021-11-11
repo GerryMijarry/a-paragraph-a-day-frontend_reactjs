@@ -11,7 +11,6 @@ import Write from "./routes/Write";
 import axios from "axios";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import { ListGroupItem } from "react-bootstrap";
 
 class App extends Component {
   constructor(props) {
@@ -20,6 +19,10 @@ class App extends Component {
       userProfile: [],
       currentUsername: "",
       isLoggedIn: false,
+      userEmail: "",
+      userFirstName: "",
+      userLastName: "",
+      userPenName: "",
     };
   }
 
@@ -96,7 +99,7 @@ class App extends Component {
     }
   };
 
-  getCurrentUserProfile = async () => {
+  updateProfile = async () => {
     try {
       const jwt = localStorage.getItem("token");
       const username = localStorage.getItem("currentUsername");
@@ -108,7 +111,10 @@ class App extends Component {
         this.setState({});
       } else {
         this.setState({
-          userProfile: response.data,
+          userEmail: response.data.email,
+          userFirstName: response.data.first_name,
+          userLastName: response.data.last_name,
+          userPenName: response.data.pen_name,
         });
       }
     } catch (err) {
@@ -143,7 +149,15 @@ class App extends Component {
           <Route path="/login" element={<Login loginUser={this.loginUser} />} />
           <Route
             path="/profile"
-            element={<Profile userProfile={this.state.userProfile} />}
+            element={
+              <Profile
+                userEmail={this.state.userEmail}
+                userPenName={this.state.userPenName}
+                userFirstName={this.state.userFirstName}
+                userLastName={this.state.userLastName}
+                updateProfile={this.state.updateProfile}
+              />
+            }
           />
           <Route
             path="*"
